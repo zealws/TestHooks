@@ -30,7 +30,8 @@ public class Hook {
     }
 
     public void send() {
-        send(HookConfig.getDefaultConfig());
+        if (HookConfig.fromDb())
+            send(HookConfig.getInstance());
     }
 
     public void send(HookConfig conf) {
@@ -47,5 +48,9 @@ public class Hook {
         } catch (Exception e) {
             throw new RuntimeException("Could not stop client", e);
         }
+    }
+
+    public static void initializeDb(String jdbc) {
+        HookConfig.initializeDb(jdbc);
     }
 }

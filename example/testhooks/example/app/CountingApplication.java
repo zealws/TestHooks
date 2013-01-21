@@ -4,8 +4,12 @@ import testhooks.source.Hook;
 
 public class CountingApplication extends Thread {
 
+    static {
+        Hook.initializeDb("jdbc:postgresql://localhost:5432/testhooks?user=testhooks&password=testhooks");
+    }
+
     private int count = 0;
-    private Hook hook = new Hook("sample-app");
+    private Hook hook = new Hook("counting-app");
 
     @Override
     public void run() {

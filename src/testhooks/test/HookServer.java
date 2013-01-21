@@ -10,7 +10,7 @@ import testhooks.common.HookConfig;
 
 public class HookServer extends Application {
 
-    private static final int DEFAULT_PORT = 10777;
+    public static final int DEFAULT_PORT = 10777;
     private Component server;
     private HookConfig config;
     private boolean started;
