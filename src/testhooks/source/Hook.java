@@ -4,8 +4,8 @@ import java.util.Map;
 
 import org.restlet.Client;
 import org.restlet.Request;
-import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
+import org.restlet.representation.ObjectRepresentation;
 
 import testhooks.common.HookConfig;
 import testhooks.common.HookData;
@@ -35,7 +35,7 @@ public class Hook {
 
     public void send(HookConfig conf) {
         Request request = new Request(conf.getMethod(), conf.getFullUri(subsys));
-        request.setEntity(data.asString(), MediaType.TEXT_PLAIN);
+        request.setEntity(new ObjectRepresentation<HookData>(data));
         handle(request);
     }
 

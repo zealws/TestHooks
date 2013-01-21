@@ -12,10 +12,10 @@ import org.restlet.Response;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 
-import testhooks.test.HookServer;
 import testhooks.test.HookManager;
+import testhooks.test.HookTestlet;
 
-public class HookTest {
+public class HookTest extends HookTestlet {
 
     private static class RespHook extends Hook {
 
@@ -33,63 +33,26 @@ public class HookTest {
 
     }
 
-    private static class NoServHook extends Hook {
-
-        public Request request;
-
-        public NoServHook() {
-            super("my-subsys");
-        }
-
-        @Override
-        protected void handle(Request request) {
-            this.request = request;
-        }
-
-    }
-
     @Test
     public void successfulRequest() {
-        HookServer server = new HookServer();
-        try {
-            server.startServer();
-            RespHook hook = new RespHook();
-            hook.send();
-            assertNotNull(hook.resp);
-            assertEquals(Status.SUCCESS_OK, hook.resp.getStatus());
-        } finally {
-            server.stopServer();
-        }
-    }
-
-    @Test
-    public void sendsData() {
-        NoServHook hook = new NoServHook();
-        hook.add("xyz", "abc");
-        hook.add("hij", "klm");
+        RespHook hook = new RespHook();
         hook.send();
-        assertNotNull(hook.request);
-        assertEquals("xyz:=abc\nhij:=klm\n", hook.request.getEntityAsText());
+        assertNotNull(hook.resp);
+        assertEquals(Status.SUCCESS_OK, hook.resp.getStatus());
     }
 
     @Test
     public void fullRequest() {
-        HookServer server = new HookServer();
-        try {
-            server.startServer();
-            Hook hook = new Hook("my-subsys");
-            hook.add("xyz", "abc");
-            hook.add("hij", "klm");
-            HookManager tf = HookManager.getInstance();
-            assertFalse(tf.has("my-subsys"));
+        Hook hook = new Hook("my-subsys");
+        hook.add("xyz", "abc");
+        hook.add("hij", "klm");
+        HookManager tf = HookManager.getInstance();
+        assertFalse(tf.has("my-subsys"));
 
-            hook.send();
+        hook.send();
 
-            assertTrue(tf.has("my-subsys"));
-            assertEquals("abc", tf.get("my-subsys", "xyz"));
-            assertEquals("klm", tf.get("my-subsys", "hij"));
-        } finally {
-            server.stopServer();
-        }
+        assertTrue(tf.has("my-subsys"));
+        assertEquals("abc", tf.get("my-subsys", "xyz"));
+        assertEquals("klm", tf.get("my-subsys", "hij"));
     }
 }

@@ -1,9 +1,12 @@
 package testhooks.common;
 
+import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Map;
 
-public class HookData {
+public class HookData implements Serializable {
+
+    private static final long serialVersionUID = 2898942161309585959L;
 
     private Map<String, String> data;
 
@@ -28,19 +31,6 @@ public class HookData {
 
     public void put(String key, String value) {
         this.data.put(key, value);
-    }
-
-    public String asString() {
-        StringEncoder enc = new StringEncoder();
-        for (String key : data.keySet()) {
-            enc.add(key, data.get(key));
-        }
-        return enc.toString();
-    }
-
-    public static HookData fromString(String full) {
-        StringEncoder enc = new StringEncoder();
-        return new HookData(enc.read(full));
     }
 
 }

@@ -62,8 +62,8 @@ public class HookManager {
     }
 
     public void reset() {
+        stopServer();
         initialized = false;
         subsystems = new Hashtable<String, HookData>();
-        stopServer();
     }
 }

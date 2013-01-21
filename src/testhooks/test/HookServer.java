@@ -54,17 +54,12 @@ public class HookServer extends Application {
         if (config != null)
             return config;
         else {
-            HookConfig conf = new HookConfig();
-            conf.setHostname("localhost");
+            HookConfig conf = HookConfig.getInstance();
             conf.setPort(DEFAULT_PORT);
             conf.setUri(SubsysStatusResource.URI);
             conf.setMethod(SubsysStatusResource.METHOD);
             config = conf;
             return config;
         }
-    }
-
-    public String stringConfig() {
-        return getConfig().asString();
     }
 }
