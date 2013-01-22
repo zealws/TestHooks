@@ -13,13 +13,12 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.representation.ObjectRepresentation;
 
-import testhooks.common.HookConfig;
 import testhooks.common.HookData;
 
 public class HookServerTest extends HookTestlet {
 
     static {
-        HookConfig.initializeDb("jdbc:postgresql://localhost:5432/testhooks?user=testhooks&password=testhooks");
+        HookManager.initializeDb("jdbc:postgresql://localhost:5432/testhooks?user=testhooks&password=testhooks");
     }
 
     @Test

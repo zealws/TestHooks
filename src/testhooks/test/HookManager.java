@@ -1,17 +1,23 @@
 package testhooks.test;
 
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Set;
 
+import org.restlet.data.Method;
+
+import testhooks.common.HookConfig;
 import testhooks.common.HookData;
 
 public class HookManager {
 
     private static final HookManager singleton = new HookManager();
 
+    private HookConfig conf = new HookConfig("localhost", 10777, "/subsys/{subsys}/status", Method.PUT);
     private Map<String, HookData> subsystems = new Hashtable<String, HookData>();
     private HookServer server = new HookServer();
-    private boolean initialized = false;
+    private Set<String> jdbcs = new HashSet<String>();
 
     private HookManager() {
         // Singleton
@@ -53,17 +59,35 @@ public class HookManager {
         server.stopServer();
     }
 
-    public boolean initialized() {
-        return initialized;
+    public HookConfig getConf() {
+        return conf;
     }
 
-    public void initialize() {
-        initialized = true;
+    public void setConf(HookConfig conf) {
+        this.conf = conf;
     }
 
     public void reset() {
         stopServer();
-        initialized = false;
         subsystems = new Hashtable<String, HookData>();
+    }
+
+    public void addJdbc(String jdbc) {
+        if (!jdbcs.contains(jdbc))
+            jdbcs.add(jdbc);
+    }
+
+    public static void initializeDb(String jdbc) {
+        singleton.addJdbc(jdbc);
+    }
+
+    public void propagateConf() {
+        for (String jdbc : jdbcs)
+            conf.toDb(jdbc);
+    }
+
+    public void cleanDbs() {
+        for (String jdbc : jdbcs)
+            HookConfig.cleanAll(jdbc);
     }
 }

@@ -54,11 +54,7 @@ public class HookServer extends Application {
         if (config != null)
             return config;
         else {
-            HookConfig conf = HookConfig.getInstance();
-            conf.setPort(DEFAULT_PORT);
-            conf.setUri(SubsysStatusResource.URI);
-            conf.setMethod(SubsysStatusResource.METHOD);
-            config = conf;
+            config = new HookConfig("localhost", DEFAULT_PORT, SubsysStatusResource.URI, SubsysStatusResource.METHOD);
             return config;
         }
     }

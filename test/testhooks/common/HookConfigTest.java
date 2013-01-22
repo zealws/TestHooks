@@ -12,27 +12,25 @@ import org.junit.Before;
 import org.junit.Test;
 import org.restlet.data.Method;
 
+import testhooks.source.Hook;
+
 public class HookConfigTest {
 
     private static final String jdbc = "jdbc:postgresql://localhost:5432/testhooks?user=testhooks&password=testhooks";
 
     static {
-        HookConfig.initializeDb(jdbc);
+        Hook.initializeDb(jdbc);
     }
 
     @Before
     public void cleanDb() {
-        HookConfig.cleanAll();
+        HookConfig.cleanAll(jdbc);
     }
 
     @Test
     public void toDb() throws SQLException {
-        HookConfig conf = HookConfig.getInstance();
-        conf.setHostname("my-hostname");
-        conf.setPort(42);
-        conf.setUri("my-uri");
-        conf.setMethod(Method.DELETE);
-        HookConfig.toDb();
+        HookConfig conf = new HookConfig("my-hostname", 42, "my-uri", Method.DELETE);
+        conf.toDb(jdbc);
 
         Connection conn = DriverManager.getConnection(jdbc);
         Statement st = conn.createStatement();
@@ -53,17 +51,14 @@ public class HookConfigTest {
         Statement st = conn.createStatement();
         String query = String.format("insert into hookconfig values ('%s', %s, '%s', '%s')",
             "my-hostname-again", 84, "my-uri-again", "CONNECT");
-        System.out.println(query);
         st.execute(query);
         st.close();
         conn.close();
 
-        HookConfig conf = HookConfig.getInstance();
-        HookConfig.fromDb();
-        conf.setHostname("my-hostname");
-        conf.setPort(42);
-        conf.setUri("my-uri");
-        conf.setMethod(Method.DELETE);
-        conf.toDb();
+        HookConfig conf = HookConfig.fromDb(jdbc);
+        assertEquals("my-hostname-again", conf.getHostname());
+        assertEquals("my-uri-again", conf.getUri());
+        assertEquals(84, conf.getPort());
+        assertEquals(Method.CONNECT, conf.getMethod());
     }
 }

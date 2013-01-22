@@ -10,9 +10,7 @@ import org.restlet.data.Method;
 
 public class HookConfig {
 
-    private static final HookConfig singleton = new HookConfig("localhost", 10777, "/subsys/{subsys}/status", Method.PUT);
     private static final boolean dbInitialized;
-    private static String jdbcConn;
 
     static {
         boolean initialize = true;
@@ -30,7 +28,7 @@ public class HookConfig {
     private String hostname;
     private String uri;
 
-    private HookConfig(String hostname, int port, String uri, Method method) {
+    public HookConfig(String hostname, int port, String uri, Method method) {
         this.hostname = hostname;
         this.port = port;
         this.uri = uri;
@@ -73,63 +71,37 @@ public class HookConfig {
         return String.format("http://" + hostname + ":" + port + uri.replace("{subsys}", subsys));
     }
 
-    public static HookConfig getInstance() {
-        return singleton;
-    }
-
-    // Must be called BEFORE fromDb() or toDb();
-    public static void initializeDb(String jdbcConn) {
-        HookConfig.jdbcConn = jdbcConn;
-    }
-
-    public static void initialize(String hostname, int port, String uri, Method method) {
-        singleton.setHostname(hostname);
-        singleton.setPort(port);
-        singleton.setUri(uri);
-        singleton.setMethod(method);
-    }
-
-    public static boolean fromDb() {
+    public static HookConfig fromDb(String jdbcConn) {
         if (!dbInitialized)
             throw new RuntimeException("HookConfig: Could not load postgresql driver, using default configuration.");
-        if (jdbcConn == null)
-            throw new RuntimeException("Could not clean database, no database initialized (call initiailizeDb first)");
         try {
-
             Connection conn = DriverManager.getConnection(jdbcConn);
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery("SELECT * FROM hookconfig");
-            if (rs.next()) {
-                singleton.setHostname(rs.getString(1));
-                singleton.setPort(rs.getInt(2));
-                singleton.setUri(rs.getString(3));
-                singleton.setMethod(Method.valueOf(rs.getString(4)));
+            try {
+                if (rs.next())
+                    return new HookConfig(rs.getString(1), rs.getInt(2), rs.getString(3), Method.valueOf(rs.getString(4)));
+                else
+                    return null;
+            } finally {
                 rs.close();
                 st.close();
                 conn.close();
-                return true;
-            } else {
-                rs.close();
-                st.close();
-                conn.close();
-                return false;
             }
         } catch (SQLException e) {
             throw new RuntimeException("Could not read hook config from database.", e);
         }
     }
 
-    public static void toDb() {
+    public void toDb(String jdbcConn) {
         if (!dbInitialized)
             throw new RuntimeException("HookConfig: Could not load postgresql driver, could not store in db.");
-        if (jdbcConn == null)
-            throw new RuntimeException("Could not clean database, no database initialized (call initiailizeDb first)");
         try {
 
             Connection conn = DriverManager.getConnection(jdbcConn);
             Statement st = conn.createStatement();
             String query = String.format("insert into hookconfig values ('%s', %s, '%s', '%s')",
-                singleton.getHostname(), singleton.getPort(), singleton.getUri(), singleton.getMethod().getName());
+                getHostname(), getPort(), getUri(), getMethod().getName());
             st.execute(query);
             st.close();
             conn.close();
@@ -138,11 +110,9 @@ public class HookConfig {
         }
     }
 
-    public static void cleanAll() {
+    public static void cleanAll(String jdbcConn) {
         if (!dbInitialized)
             throw new RuntimeException("Could not load postgresql driver, could not store in db.");
-        if (jdbcConn == null)
-            throw new RuntimeException("Could not clean database, no database initialized (call initiailizeDb first)");
         try {
 
             Connection conn = DriverManager.getConnection(jdbcConn);

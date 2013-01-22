@@ -19,7 +19,7 @@ Be aware that this will attempt to connect to the database 'testhooks' with user
 To configure your production application to use your database, you must specify in your production application how to connect to the database. For example:
 
     static {
-        HookConfig.initializeDb("jdbc:postgresql://hostname:port/database?user=dbuser&password=dbpass");
+        Hook.initializeDb("jdbc:postgresql://hostname:port/database?user=dbuser&password=dbpass");
     }
 
 Once this confugration has been done, you can create a new [Hook](http://github.com/zfjagann/TestHooks/blob/master/src/testhooks/source/Hook.java) in a production application, simply embed a new Hook in your application:
@@ -43,7 +43,7 @@ First, your test class that needs access to hook information needs to extend `Ho
 The test suite needs to be configured to use the same database as the production application:
 
     static {
-        HookConfig.initializeDb("jdbc:postgresql://hostname:port/database?user=dbuser&password=dbpass");
+        HookManager.initializeDb("jdbc:postgresql://hostname:port/database?user=dbuser&password=dbpass");
     }
 
 Extending `HookTestlet` also gives access to a [HookManager](https://github.com/zfjagann/TestHooks/blob/master/src/testhooks/test/HookManager.java), which is how tests access information about hooks. To use it, simply call it's `get` method:
@@ -55,6 +55,8 @@ The first parameter will be the application name, and the second the key of the 
 *Note*: Keep in mind that when the test starts executing, no hook calls may have been made. As a result, tests might need to sleep for some amount of time after starting to ensure that hook data has been delivered to the test suite.
 
 For an example of a working test suite, see [CountingApplicationRemoteTest](https://github.com/zfjagann/TestHooks/blob/master/example/testhooks/example/test/CountingApplicationRemoteTest.java).
+
+*Note*: if more than one application is required, the `HookManager.initializeDb` function may be applied to more than 1 JDBC connection, in which case all the connections are setup and cleaned up by the tests.
 
 ## Details
 

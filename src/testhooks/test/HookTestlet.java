@@ -3,23 +3,21 @@ package testhooks.test;
 import org.junit.After;
 import org.junit.Before;
 
-import testhooks.common.HookConfig;
-
 public abstract class HookTestlet {
 
-    public HookManager hookManager = HookManager.getInstance();
+    public static HookManager hookManager = HookManager.getInstance();
 
     @Before
     public void setup() {
         cleanup();
+        hookManager.propagateConf();
         hookManager.startServer();
-        HookConfig.toDb();
     }
 
     @After
     public void cleanup() {
+        hookManager.cleanDbs();
         hookManager.reset();
-        HookConfig.cleanAll();
     }
 
 }

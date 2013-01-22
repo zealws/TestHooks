@@ -1,0 +1,6 @@
+create table hookconfig (
+    hostname varchar(255),
+    port integer,
+    uri varchar(255),
+    method varchar(255),
+    primary key(hostname, port, uri, method));

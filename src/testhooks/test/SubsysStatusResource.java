@@ -36,7 +36,6 @@ public class SubsysStatusResource extends ServerResource {
         }
         String subsys = getRequest().getAttributes().get("subsys").toString();
         try {
-            HookManager.getInstance().initialize();
             HookManager.getInstance().set(subsys, input.getObject());
             return "Status updated";
         } catch (IOException e) {

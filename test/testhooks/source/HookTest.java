@@ -12,14 +12,17 @@ import org.restlet.Response;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 
-import testhooks.common.HookConfig;
 import testhooks.test.HookManager;
 import testhooks.test.HookTestlet;
 
 public class HookTest extends HookTestlet {
 
+    private static final String jdbc = "jdbc:postgresql://localhost:5432/testhooks?user=testhooks&password=testhooks";
+
     static {
-        HookConfig.initializeDb("jdbc:postgresql://localhost:5432/testhooks?user=testhooks&password=testhooks");
+        // Initialize both client and server end since we're testing both here.
+        Hook.initializeDb(jdbc);
+        HookManager.initializeDb(jdbc);
     }
 
     private static class RespHook extends Hook {

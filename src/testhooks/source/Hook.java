@@ -14,6 +14,7 @@ public class Hook {
 
     private HookData data;
     private String subsys;
+    private static String jdbc;
 
     public Hook(String subsys) {
         this.subsys = subsys;
@@ -30,8 +31,9 @@ public class Hook {
     }
 
     public void send() {
-        if (HookConfig.fromDb())
-            send(HookConfig.getInstance());
+        HookConfig conf = HookConfig.fromDb(jdbc);
+        if (conf != null)
+            send(conf);
     }
 
     public void send(HookConfig conf) {
@@ -51,6 +53,6 @@ public class Hook {
     }
 
     public static void initializeDb(String jdbc) {
-        HookConfig.initializeDb(jdbc);
+        Hook.jdbc = jdbc;
     }
 }
