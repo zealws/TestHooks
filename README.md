@@ -34,7 +34,7 @@ Once you have added all the data points, you can send the data to the test suite
 
 `hook.send();`
 
-For an exmaple application, see [CountingApplication](http://github.com/zfjagann/TestHooks/blob/master/example/testhooks/example/app/CountingApplication.java).
+For an exmaple application, see [CountingApplication](http://github.com/zfjagann/TestHooks/blob/master/example/testhooks/example/app/CountingApplication.java) or [CountdownApplication](http://github.com/zfjagann/TestHooks/blob/master/example/testhooks/example/app/CountdownApplication.java).
 
 ### Test Suite
 
@@ -46,7 +46,7 @@ The test suite needs to be configured to use the same database as the production
         HookManager.initializeDb("jdbc:postgresql://hostname:port/database?user=dbuser&password=dbpass");
     }
 
-Extending `HookTestlet` also gives access to a [HookManager](https://github.com/zfjagann/TestHooks/blob/master/src/testhooks/test/HookManager.java), which is how tests access information about hooks. To use it, simply call it's `get` method:
+Extending `HookTestlet` also gives access to a [HookManager](http://github.com/zfjagann/TestHooks/blob/master/src/testhooks/test/HookManager.java), which is how tests access information about hooks. To use it, simply call it's `get` method:
 
 `hookManager.get("application-name", "key")`
 
@@ -54,7 +54,7 @@ The first parameter will be the application name, and the second the key of the 
 
 *Note*: Keep in mind that when the test starts executing, no hook calls may have been made. As a result, tests might need to sleep for some amount of time after starting to ensure that hook data has been delivered to the test suite.
 
-For an example of a working test suite, see [CountingApplicationRemoteTest](https://github.com/zfjagann/TestHooks/blob/master/example/testhooks/example/test/CountingApplicationRemoteTest.java).
+For an example of a working test suite, see [ApplicationsRemoteTest](http://github.com/zfjagann/TestHooks/blob/master/example/testhooks/example/test/ApplicationsRemoteTest.java).
 
 *Note*: if more than one application is required, the `HookManager.initializeDb` function may be applied to more than 1 JDBC connection, in which case all the connections are setup and cleaned up by the tests.
 
